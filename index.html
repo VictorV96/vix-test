@@ -7,8 +7,9 @@
 	<script src="js/jquery.min.js"></script>
 	<link rel="stylesheet" href="css/uikit.min.css" />
 	<link rel="stylesheet" href="css/jquery-ui.min.css" />
-    <script src="js/uikit.min.js"></script>
     <script src="js/jquery-ui.min.js"></script>
+    <script src="js/uikit.min.js"></script>
+    <script src="js/jquery.base64.js"></script>
     <style>    
     	body 
 			{
@@ -133,6 +134,7 @@
 	  <input type="text" class="link" placeholder="Ссылка на фильм" />
 	  <div class="display">
 	    <!-- display msg here -->
+	    <?php echo "123" ?>
 	  </div>
 	</div>
 	
@@ -144,9 +146,11 @@ var $click = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
 var $playerid;
 var $id;
 var $volume;
-$(document).ready(function(){
+$(document).ready(function(){	
 	$.ajax({
-		  url: 'kodi:960616@192.168.0.100:8080/jsonrpc?request='+$click,			  
+		type: "GET",
+		beforeSend: function(xhr){xhr.setRequestHeader('Authorization', 'Basic '+$.base64.encode('kodi:960616'));},
+		  url: 'http://192.168.0.100:8080/jsonrpc?request='+$click,			  
 		  success: function(data){
 		    $playerid = data['result']['0']['playerid'];
 		    $id = data['id'];
@@ -159,7 +163,9 @@ $(document).ready(function(){
 		$('.red').click(function(){$click = '{"jsonrpc":"2.0","method":"System.Shutdown","id":1}' })
 		$('.button').click(function(){
 			$.ajax({
-			  url: 'kodi:960616@192.168.0.100:8080/jsonrpc?request='+$click,			  
+			type: "GET",
+			beforeSend: function(xhr){xhr.setRequestHeader('Authorization', 'Basic '+$.base64.encode('kodi:960616'));},
+			  url: 'http://192.168.0.100:8080/jsonrpc?request='+$click,			  
 			  success: function(data){
 			    $('.info').append(data)
 			  }
