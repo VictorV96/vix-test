@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>kodi remote</title>
+	<script src="js/jquery.min.js"></script>
+	<link rel="stylesheet" href="css/uikit.min.css" />
+	<link rel="stylesheet" href="css/jquery-ui.min.css" />
+    <script src="js/uikit.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <style>    
+    	body 
+			{
+			  background: #999;
+			  height: 90vh;
+			  overflow: hidden;
+			}
+
+			#controller 
+			{
+			  margin: 0 auto;
+			  width: 82.5%;
+			  height: 90vh;
+			  background: #000;
+			  background: -webkit-gradient(linear, left top, right top, color-stop(0%,#131313), color-stop(0%,#111111), color-stop(0%,#1c1c1c), color-stop(8%,#666666), color-stop(50%,#a59393), color-stop(92%,#595959), color-stop(100%,#000000), color-stop(100%,#4c4c4c));
+			  border: 1px solid transparent;
+			  border-radius: 10px;
+			  box-shadow: 3px 3px 10px #222;
+			  padding: 30px;
+			  font-family: sans-serif;
+			  color: #eee;
+			}
+
+			.controls {
+			width: 100%;
+			  position:relative;
+			  display: -webkit-flex;
+			  display: -moz-flex;
+			  display: -ms-flex;
+			  display: -o-flex;
+			  display: flex;
+			  -webkit-flex-wrap: wrap;
+			  -moz-flex-wrap: wrap;
+			  -ms-flex-wrap: wrap;
+			  -o-flex-wrap: wrap;
+			  flex-wrap: wrap;
+			  justify-content: space-around;
+			}
+
+			.display, .link
+			{
+			  clear: both;
+			  width: 100%;
+			  height: 20px;
+			  padding: 10px 0;
+			  background: #222;
+			  box-shadow: inset 2px 0 11px #000;
+			  border-radius: 5px 5px 0;
+			  text-align:center;
+			  color: #48D1CC;
+			  font-size: 12px;
+			  text-shadow: 0 0 5px #FFFACD;
+			  font-family: monospace;
+			  text-transform: uppercase;
+			  letter-spacing: 2px;
+			  line-height: 18px;
+			  margin-top: 2vh;
+			}
+
+			.link{margin-top: -2vh; border:none;}
+
+			.button
+			{				
+			  background: #303131;
+			  width: 20.1vw;
+			  height: 20vw;
+			  border-radius: 30px;
+			  border: 1px solid #000;
+			  text-align: center;
+			  position: relative;
+			  box-shadow:0 0 5px #000, inset 0 0 20px #000;
+			  margin: 7vw auto;
+			}
+
+			.button:hover 
+			{
+			  box-shadow:0 0 1px #000, inset 0 0 9px #000;
+			}
+
+			ins > span 
+			{
+			  position: absolute;
+			  font-size: 9px;
+			  left: 0; top:-20px;
+			  color: #888;
+			  width: 34px;
+			  color: #fff;
+			  font-weight: bold;
+			  padding: 3px;
+			  text-align: center;
+			  text-transform: uppercase;
+			}
+
+			.red {
+			  background: red!important; 
+			}
+
+			.blue 
+			{
+			  background: azure!important;
+			}
+    }
+    }
+    </style>
+</head>
+<body>
+	<div id="controller">
+	  <div class="controls">
+	    <ins class="button red"><span>POWER</span></ins>
+	    <ins class="button volp"><span>Vol +</span></ins>
+	    <ins class="button volm"><span>Vol -</span></ins>
+	    <ins class="button"><span>CH +</span></ins>
+	    <ins class="button"><span>CH -</span></ins>
+	    <ins class="button"><span>SETTINGS</span></ins>
+	    <ins class="button"><span>MENU</span></ins>
+	    <ins class="button blue play"><span>OK</span></ins>
+	    <ins class="button"><span>INPUT</span></ins>
+	    <ins class="button"><span>BACK</span></ins>
+	    <ins class="button"><span>EXIT</span></ins>
+	    <ins class="button"><span>GUIDE</span></ins>
+	  </div>  
+	  <input type="text" class="link" placeholder="Ссылка на фильм" />
+	  <div class="display">
+	    <!-- display msg here -->
+	  </div>
+	</div>
+	
+</body>
+</html>
+<script>
+
+var $click = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
+var $playerid;
+var $id;
+var $volume;
+$(document).ready(function(){
+	$.ajax({
+		  url: 'kodi:960616@192.168.0.100:8080/jsonrpc?request='+$click,			  
+		  success: function(data){
+		    $playerid = data['result']['0']['playerid'];
+		    $id = data['id'];
+		  }
+	});
+})
+		$('.play').click(function(){$click = '{"jsonrpc": "2.0", "method": "Player.PlayPause", "params": { "playerid": '+$playerid+' }, "id": '+$id+'}' })
+		$('.volp').click(function(){$click = '{"jsonrpc":"2.0","method":"Application.SetVolume","params":{"volume":"increment"},"id":'+$id+' }' })
+		$('.volm').click(function(){$click = '{"jsonrpc":"2.0","method":"Application.SetVolume","params":{"volume":"decrement"},"id":'+$id+' }' })
+		$('.red').click(function(){$click = '{"jsonrpc":"2.0","method":"System.Shutdown","id":1}' })
+		$('.button').click(function(){
+			$.ajax({
+			  url: 'kodi:960616@192.168.0.100:8080/jsonrpc?request='+$click,			  
+			  success: function(data){
+			    $('.info').append(data)
+			  }
+			});
+		})
+$('.button').on('click', function(e){
+  $('.display').text('Clicked');
+  setTimeout(function(){
+    $('.display').text('');
+  },300);
+});
+</script>
